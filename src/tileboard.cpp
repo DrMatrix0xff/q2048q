@@ -135,8 +135,15 @@ bool TileBoard::isInitStatus()
 
 void TileBoard::togglePlaying()
 {
-    if (isGameOver)
+    if (isGameOver) {
+        int i, j;
         isGameOver = false;
+        for (i = 0; i < 4; i++)
+            for (j = 0; j < 4; j++)
+                values[i][j] = 0;
+        front = rear = 0;
+        emit emptyStack(true);
+    }
     playing = (! playing);
     if (isInitStatus()) {
         generateRandomNumber();
@@ -158,7 +165,7 @@ void TileBoard::generateRandomNumber()
         j = rn & 3;
         if (values[i][j] == 0) {
             rn = qrand();
-            val = (rn % 5 == 0) ? 4 : 2;
+            val = (((rn & 15) == 5) || ((rn & 13) == 1)) ? 4 : 2;
             break;
         }
     } while (1);

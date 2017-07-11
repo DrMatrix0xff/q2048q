@@ -28,5 +28,4 @@ SOURCES += main.cpp\
     tileboard.cpp
 
 HEADERS  += mainwindow.h \
-    tileboard.h \
-    boundstack.h
+    tileboard.h
