@@ -388,6 +388,10 @@ void TileBoard::pushState()
 
 void TileBoard::goBackward()
 {
+    if (isGameOver) {
+        isGameOver = false;
+        playing = true;
+    }
     const int N = 4;
     int i, j;
     front = (front -1) & (STKSIZE - 1);
