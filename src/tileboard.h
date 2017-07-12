@@ -15,6 +15,7 @@ public:
 public slots:
     void togglePlaying();
     void goBackward();
+    void goForward();
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -23,14 +24,17 @@ protected:
 signals:
     void gameOver();
     void emptyStack(bool);
+    void currentTop(bool);
 
 private:
     QRect rect;
     int values[4][4];
     bool playing;
     bool isGameOver;
+    bool backwarding;
     int front;
     int rear;
+    int currentIndex;
 
     bool checkTiles();
     void moveDown();
@@ -41,7 +45,11 @@ private:
     void pushState();
     void paintTile(QPainter &painter, QRect &rect, int value);
     void generateRandomNumber();
-    bool isTileMoved();
+
+    bool canMoveDown();
+    bool canMoveLeft();
+    bool canMoveRight();
+    bool canMoveUp();
 };
 
 #endif // TILEBOARD_H

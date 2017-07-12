@@ -18,6 +18,7 @@ public:
 private:
     QPushButton *ctrlButton;
     QPushButton *backwardButton;
+    QPushButton *forwardButton;
     TileBoard *table;
     bool playing;
 
@@ -25,6 +26,7 @@ public slots:
     void togglePlayingStatus();
     void resetStatus();
     void enableBackward(bool isEmpty);
+    void enableForward(bool isTop);
 };
 
 #endif // MAINWINDOW_H

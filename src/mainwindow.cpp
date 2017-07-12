@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     ctrlButton->setFixedSize(72, 30);
     ctrlButton->setText("Play");
     ctrlButton->setToolTip("Play");
+    ctrlButton->setFocusPolicy(Qt::NoFocus);
     hlay->addWidget(ctrlButton);
 
     hlay->addStretch();
@@ -24,13 +25,16 @@ MainWindow::MainWindow(QWidget *parent)
     backwardButton->setToolTip("Backward");
     backwardButton->setFixedSize(72, 30);
     backwardButton->setEnabled(false);
+    backwardButton->setFocusPolicy(Qt::NoFocus);
     hlay->addWidget(backwardButton);
 
     hlay->addSpacing(24);
-    QPushButton *forwardBtn = new QPushButton;
-    forwardBtn->setText("-->");
-    forwardBtn->setFixedSize(72, 30);
-    hlay->addWidget(forwardBtn);
+    forwardButton = new QPushButton;
+    forwardButton->setText("-->");
+    forwardButton->setFixedSize(72, 30);
+    forwardButton->setEnabled(false);
+    forwardButton->setFocusPolicy(Qt::NoFocus);
+    hlay->addWidget(forwardButton);
 
     QRect rect(2, 2, 400, 400);
     table = new TileBoard(rect, this);
@@ -44,8 +48,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ctrlButton, SIGNAL(clicked()), table, SLOT(togglePlaying()));
     connect(ctrlButton, SIGNAL(clicked()), this, SLOT(togglePlayingStatus()));
     connect(backwardButton, SIGNAL(clicked()), table, SLOT(goBackward()));
+    connect(forwardButton, SIGNAL(clicked()), table, SLOT(goForward()));
     connect(table, SIGNAL(gameOver()), this, SLOT(resetStatus()));
     connect(table, SIGNAL(emptyStack(bool)), this, SLOT(enableBackward(bool)));
+    connect(table, SIGNAL(currentTop(bool)), this, SLOT(enableForward(bool)));
 }
 
 void MainWindow::togglePlayingStatus()
@@ -74,6 +80,13 @@ void MainWindow::enableBackward(bool isEmpty)
 {
     backwardButton->setEnabled(! isEmpty);
     if (isEmpty)
+        table->setFocus();
+}
+
+void MainWindow::enableForward(bool isTop)
+{
+    forwardButton->setEnabled(! isTop);
+    if (isTop)
         table->setFocus();
 }
 

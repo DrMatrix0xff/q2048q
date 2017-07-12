@@ -7,5 +7,7 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
+    QTime zero(0, 0, 0);
+    qsrand(zero.secsTo(QTime::currentTime()));
     return a.exec();
 }
