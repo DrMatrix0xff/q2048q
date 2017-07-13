@@ -36,7 +36,6 @@ private:
     int rear;
     int currentIndex;
 
-    bool checkTiles();
     void moveDown();
     void moveLeft();
     void moveRight();
@@ -46,10 +45,15 @@ private:
     void paintTile(QPainter &painter, QRect &rect, int value);
     void generateRandomNumber();
 
-    bool canMoveDown();
-    bool canMoveLeft();
-    bool canMoveRight();
-    bool canMoveUp();
+    int detectDirection();
+
+    enum {
+        down_ = 1,
+        left_ = 2,
+        right_ = 4,
+        up_ = 8,
+    };
+
 };
 
 #endif // TILEBOARD_H

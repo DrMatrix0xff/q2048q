@@ -170,29 +170,6 @@ void TileBoard::generateRandomNumber()
     values[i][j] = val;
 }
 
-bool TileBoard::checkTiles()
-{
-    int i, j;
-    for (i = 0; i < 4; i++)
-        for (j = 0; j < 4; j++)
-            if (values[i][j] == 0)
-                return true;
-
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 3; j++)
-            if (values[i][j] == values[i][j + 1])
-                return true;
-    }
-
-    for (j = 0; j < 4; j++) {
-        for (i = 0; i < 3; i++)
-            if (values[i][j] == values[i+1][j])
-                return true;
-    }
-
-    return false;
-}
-
 void TileBoard::keyPressEvent(QKeyEvent *event)
 {
     if (! playing) {
@@ -201,35 +178,44 @@ void TileBoard::keyPressEvent(QKeyEvent *event)
     }
 
     int oldIndex(currentIndex);
+    int canMove = detectDirection();
     switch (event->key()) {
     case Qt::Key_Down:
-        if (canMoveDown()) {
-            backwarding = false;
-            front = currentIndex;
+        if (canMove & down_) {
+            if (backwarding) {
+                backwarding = false;
+                front = currentIndex;
+            }
             pushState();    // save the state before it is modified
             moveDown();
         }
         break;
     case Qt::Key_Left:
-        if (canMoveLeft()) {
-            backwarding = false;
-            front = currentIndex;
+        if (canMove & left_) {
+            if(backwarding) {
+                backwarding = false;
+                front = currentIndex;
+            }
             pushState();
             moveLeft();
         }
         break;
     case Qt::Key_Right:
-        if (canMoveRight()) {
-            backwarding = false;
-            front = currentIndex;
+        if (canMove & right_) {
+            if (backwarding) {
+                backwarding = false;
+                front = currentIndex;
+            }
             pushState();
             moveRight();
         }
         break;
     case Qt::Key_Up:
-        if (canMoveUp()) {
-            backwarding = false;
-            front = currentIndex;
+        if (canMove & up_) {
+            if (backwarding) {
+                backwarding = false;
+                front = currentIndex;
+            }
             pushState();
             moveUp();
         }
@@ -242,7 +228,7 @@ void TileBoard::keyPressEvent(QKeyEvent *event)
     if (oldIndex != currentIndex)
         generateRandomNumber();
 
-    if (! checkTiles()) {
+    if (! detectDirection()) {
         isGameOver = true;
         playing = false;
         emit gameOver();
@@ -376,64 +362,39 @@ void TileBoard::moveUp()
     }
 }
 
-bool TileBoard::canMoveDown()
+int TileBoard::detectDirection()
 {
     const int N = 4;
-    int i, column;
+    int ret1(0), ret2(0);
+    int row, column;
+
     for (column = 0; column < N; column++) {
-        for (i = 0; i < N - 1; i++) {
+        for (int i = 0; i < N - 1; i++) {
             if (values[i][column] != 0 && values[i+1][column] == 0)
-                return true;
-            if (values[i][column] != 0 && values[i][column] == values[i+1][column])
-                return true;
-        }
-    }
-    return false;
-}
-
-bool TileBoard::canMoveLeft()
-{
-    const int N = 4;
-    int row, j;
-    for (row = 0; row < N; row++) {
-        for (j = 0; j < N - 1; j++) {
-            if (values[row][j] == 0 && values[row][j+1] != 0)
-                return true;
-            if (values[row][j] != 0 && values[row][j] == values[row][j+1])
-                return true;
-        }
-    }
-    return false;
-}
-
-bool TileBoard::canMoveRight()
-{
-    const int N = 4;
-    int row, j;
-    for (row = 0; row < N; row++) {
-        for (j = 0; j < N - 1; j++) {
-            if (values[row][j] != 0 && values[row][j+1] == 0)
-                return true;
-            if (values[row][j] != 0 && values[row][j] == values[row][j+1])
-                return true;
-        }
-    }
-    return false;
-}
-
-bool TileBoard::canMoveUp()
-{
-    const int N = 4;
-    int i, column;
-    for (column = 0; column < N; column++) {
-        for (i = 0; i < N - 1; i++) {
+                ret1 |= down_;
+            if (values[i][column] != 0 && values[i+1][column] == values[i][column])
+                ret1 |= (down_ | up_);
             if (values[i][column] == 0 && values[i+1][column] != 0)
-                return true;
-            if (values[i][column] != 0 && values[i][column] == values[i+1][column])
-                return true;
+                ret1 |= up_;
         }
+        if (ret1 == (down_ | up_))
+            break;
     }
-    return false;
+
+    for (row = 0; row < N; row++) {
+        for (int j = 0; j < N - 1; j++) {
+            if (values[row][j] == 0 && values[row][j+1] != 0)
+                ret2 |= left_;
+            if (values[row][j] != 0 && values[row][j+1] == values[row][j])
+                ret2 |= (left_ | right_);
+            if (values[row][j] != 0 && values[row][j+1] == 0)
+                ret2 |= right_;
+        }
+        if (ret2 == (left_ | right_))
+            break;
+    }
+
+    return (ret1 | ret2);
 }
 
 void TileBoard::pushState()
@@ -488,6 +449,7 @@ void TileBoard::goForward()
     currentIndex = (currentIndex + 1) & (STKSIZE - 1);
     if (currentIndex == front)
         emit currentTop(true);
+    emit emptyStack(false);
     for (i = 0; i < N; i++)
         for (j = 0; j < N; j++)
             values[i][j] = BoundedStack[currentIndex][N*i + j];
