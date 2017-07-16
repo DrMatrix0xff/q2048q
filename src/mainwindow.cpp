@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
     vlay->addWidget(table);
 
     vbox->setLayout(vlay);
+    vbox->setContentsMargins(85, 0, 0, 0);
     setCentralWidget(central);
 
     connect(ctrlButton, SIGNAL(clicked()), table, SLOT(togglePlaying()));
@@ -61,11 +62,15 @@ void MainWindow::togglePlayingStatus()
     if (playing) {
         ctrlButton->setText("Pause");
         ctrlButton->setToolTip("Pause");
+        backwardButton->setEnabled(true);
+        forwardButton->setEnabled(true);
         // switch keyboard focus to table
         table->setFocus();
     } else {
         ctrlButton->setText("Play");
         ctrlButton->setToolTip("Play");
+        backwardButton->setEnabled(false);
+        forwardButton->setEnabled(false);
     }
 }
 

@@ -48,10 +48,10 @@ private:
     int detectDirection();
 
     enum {
-        down_ = 1,
-        left_ = 2,
-        right_ = 4,
-        up_ = 8,
+        down_ = 0x1,
+        left_ = 0x2,
+        right_ = 0x4,
+        up_ = 0x8,
     };
 
 };

@@ -454,5 +454,9 @@ void TileBoard::goForward()
         for (j = 0; j < N; j++)
             values[i][j] = BoundedStack[currentIndex][N*i + j];
 
+    if (! detectDirection()) {
+        isGameOver = true;
+        playing = false;
+    }
     update();
 }
