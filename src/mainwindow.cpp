@@ -62,8 +62,8 @@ void MainWindow::togglePlayingStatus()
     if (playing) {
         ctrlButton->setText("Pause");
         ctrlButton->setToolTip("Pause");
-        backwardButton->setEnabled(true);
-        forwardButton->setEnabled(true);
+        // instead of enabling backward and forward buttons here, use slots to do it
+
         // switch keyboard focus to table
         table->setFocus();
     } else {

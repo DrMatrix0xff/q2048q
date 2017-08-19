@@ -3,18 +3,13 @@
 static const int STKSIZE = 2048;
 static int BoundedStack[STKSIZE][16];
 
+static bool isStarted(false);
+
 TileBoard::TileBoard(QRect &rect, QWidget *parent)
     : QWidget(parent), rect(rect),
-      playing(false), isGameOver(false), backwarding(false),
-      front(0), rear(0), currentIndex(0)
+      playing(false), isGameOver(true)
 {
     setFocusPolicy(Qt::StrongFocus);
-    int i, j;
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 4; j++)
-            values[i][j] = 0;
-    }
-
 }
 
 QSize TileBoard::sizeHint() const
@@ -37,7 +32,7 @@ void TileBoard::paintEvent(QPaintEvent * /* event */)
     int w = rect.width();
     int h = rect.height();
     // paint game over state
-    if (isGameOver) {
+    if (isGameOver && isStarted) {
         painter.fillRect(rect, QColor::fromRgba(qRgba(120, 120, 120, 128)));
         QFont font("Sans", 12);
         painter.setFont(font);
@@ -142,13 +137,21 @@ void TileBoard::togglePlaying()
         for (i = 0; i < 4; i++)
             for (j = 0; j < 4; j++)
                 values[i][j] = 0;
-        front = rear = 0;
+        currentIndex = front = rear = 0;
+        backwarding = false;
         emit emptyStack(true);
+        emit currentTop(true);
     }
     playing = (! playing);
+    if (! isStarted)
+        isStarted = true;
     if (isInitStatus()) {
         generateRandomNumber();
         generateRandomNumber();
+    }
+    if (playing) {
+        emit emptyStack(currentIndex == rear);
+        emit currentTop(currentIndex == front);
     }
     update();
 }
