@@ -10,6 +10,10 @@ TileBoard::TileBoard(QRect &rect, QWidget *parent)
       playing(false), isGameOver(true)
 {
     setFocusPolicy(Qt::StrongFocus);
+    int i, j;
+    for (i = 0; i < 4; i++)
+        for (j = 0; j < 4; j++)
+            values[i][j] = 0;
 }
 
 QSize TileBoard::sizeHint() const
@@ -166,7 +170,7 @@ void TileBoard::generateRandomNumber()
         j = rn & 3;
         if (values[i][j] == 0) {
             rn = qrand();
-            val = (((rn & 15) == 5) || ((rn & 13) == 1)) ? 4 : 2;
+            val = (((rn & 15) == 5) || ((rn & 15) == 1)) ? 4 : 2;
             break;
         }
     } while (1);

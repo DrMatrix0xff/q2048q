@@ -31,7 +31,6 @@ private:
     int values[4][4];
     bool playing;
     bool isGameOver;
-    bool isPlayed;
     bool backwarding;
     int front;
     int rear;
